@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,4 +19,5 @@ public class ShipmentDto {
     private ShipmentState currentState;
     @Builder.Default
     private List<StatusHistoryDto> statusHistory = new ArrayList<>();
+    private Instant createdAt;
 }

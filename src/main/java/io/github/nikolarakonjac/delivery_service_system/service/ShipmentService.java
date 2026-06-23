@@ -8,6 +8,7 @@ import io.github.nikolarakonjac.delivery_service_system.dto.shipment.UpdateShipm
 import io.github.nikolarakonjac.delivery_service_system.entity.Shipment;
 import io.github.nikolarakonjac.delivery_service_system.entity.StatusHistory;
 import io.github.nikolarakonjac.delivery_service_system.entity.User;
+import io.github.nikolarakonjac.delivery_service_system.entity.enums.ShipmentState;
 import io.github.nikolarakonjac.delivery_service_system.repository.ShipmentRepository;
 import io.github.nikolarakonjac.delivery_service_system.repository.UserRepository;
 import io.github.nikolarakonjac.delivery_service_system.utility.exceptions.ApiExceptionFactory;
@@ -16,13 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
-import java.util.List;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +44,25 @@ public class ShipmentService {
 
         user.addShipment(newShipment);
         shipmentRepository.save(newShipment);
+    }
+
+
+    public List<ShipmentDto> filterShipments(String username, ShipmentState state, LocalDate createdDate) {
+        String usernameFilter = username != null && !username.isBlank() ? username.trim() : null;
+        String stateFilter = state != null ? state.name() : null;
+
+        return shipmentRepository.filterShipments(usernameFilter, stateFilter, createdDate).stream()
+                .map(this::mapShipmentToDto)
+                .toList();
+    }
+
+    private ShipmentDto mapShipmentToDto(Shipment shipment) {
+        return ShipmentDto.builder()
+                .trackerId(shipment.getTrackerId())
+                .description(shipment.getDescription())
+                .currentState(shipment.getCurrentState())
+                .createdAt(shipment.getCreatedAt())
+                .build();
     }
 
     public void updateShipmentState(UpdateShipmentDto updateShipmentDto) {

@@ -10,9 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import io.github.nikolarakonjac.delivery_service_system.entity.enums.ShipmentState;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,6 +36,15 @@ public class ShipmentController {
     public ResponseEntity<Void> updateShipmentState(@RequestBody @Valid UpdateShipmentDto updateShipmentDto){
         shipmentService.updateShipmentState(updateShipmentDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ShipmentDto>> filterShipments(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) ShipmentState state,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdDate
+    ) {
+        return ResponseEntity.ok(shipmentService.filterShipments(username, state, createdDate));
     }
 
     @GetMapping("/{trackerId}/status-history")
