@@ -12,11 +12,15 @@ import java.math.BigDecimal;
 public class ApiExceptionFactory {
 
     public static ApiException userNotFound() {
-        return new ApiException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, "Korisnik ne postoji");
+        return new ApiException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, "User doesn't exist");
     }
 
     public static ApiException userAlreadyExists() {
-        return new ApiException(HttpStatus.CONFLICT, ErrorCode.CONFLICT, "Korisnik vec postoji");
+        return new ApiException(HttpStatus.CONFLICT, ErrorCode.CONFLICT, "User already exist");
+    }
+
+    public static ApiException shipmentNotFound() {
+        return new ApiException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, "Shipment doesn't exist");
     }
 
 }

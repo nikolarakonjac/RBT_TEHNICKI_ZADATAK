@@ -1,15 +1,16 @@
 package io.github.nikolarakonjac.delivery_service_system.controller;
 
 import io.github.nikolarakonjac.delivery_service_system.dto.shipment.NewShipmentDto;
+import io.github.nikolarakonjac.delivery_service_system.dto.shipment.ShipmentDto;
+import io.github.nikolarakonjac.delivery_service_system.dto.shipment.UpdateShipmentDto;
 import io.github.nikolarakonjac.delivery_service_system.service.ShipmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shipments")
@@ -23,4 +24,17 @@ public class ShipmentController {
         shipmentService.createShipment(newShipment);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PutMapping
+    public ResponseEntity<Void> updateShipmentState(@RequestBody @Valid UpdateShipmentDto updateShipmentDto){
+        shipmentService.updateShipmentState(updateShipmentDto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{trackerId}")
+    public ResponseEntity<ShipmentDto> getShipment(@PathVariable UUID trackerId){
+        return ResponseEntity.ok(shipmentService.getSingleShipment(trackerId));
+    }
+
+
 }
