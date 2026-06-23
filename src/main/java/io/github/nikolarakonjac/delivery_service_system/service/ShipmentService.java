@@ -2,21 +2,22 @@ package io.github.nikolarakonjac.delivery_service_system.service;
 
 import io.github.nikolarakonjac.delivery_service_system.dto.shipment.NewShipmentDto;
 import io.github.nikolarakonjac.delivery_service_system.dto.shipment.ShipmentDto;
+import io.github.nikolarakonjac.delivery_service_system.dto.shipment.StatusHistoryDto;
 import io.github.nikolarakonjac.delivery_service_system.dto.shipment.ShipmentImportResultDto;
 import io.github.nikolarakonjac.delivery_service_system.dto.shipment.UpdateShipmentDto;
 import io.github.nikolarakonjac.delivery_service_system.entity.Shipment;
 import io.github.nikolarakonjac.delivery_service_system.entity.StatusHistory;
 import io.github.nikolarakonjac.delivery_service_system.entity.User;
-import io.github.nikolarakonjac.delivery_service_system.entity.enums.ShipmentState;
 import io.github.nikolarakonjac.delivery_service_system.repository.ShipmentRepository;
 import io.github.nikolarakonjac.delivery_service_system.repository.UserRepository;
 import io.github.nikolarakonjac.delivery_service_system.utility.exceptions.ApiExceptionFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,14 +28,12 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
     private final UserRepository userRepository;
 
     public void createShipment(NewShipmentDto newShipmentDto) {
-        log.info("create shipment");
         User user = userRepository.findById(newShipmentDto.getUserId())
                 .orElseThrow(ApiExceptionFactory::userNotFound);
 
@@ -61,7 +60,7 @@ public class ShipmentService {
         shipmentRepository.save(shipment);
     }
 
-    public ShipmentDto getSingleShipment(UUID trackerId) {
+    public ShipmentDto getShipmentStatusHistory(UUID trackerId) {
         Shipment shipment = shipmentRepository.findByTrackerId(trackerId)
                 .orElseThrow(ApiExceptionFactory::shipmentNotFound);
 
@@ -69,6 +68,22 @@ public class ShipmentService {
                 .trackerId(shipment.getTrackerId())
                 .description(shipment.getDescription())
                 .currentState(shipment.getCurrentState())
+                .statusHistory(mapStatusHistoryListIntoDto(shipment.getStatusHistory()))
+                .build();
+    }
+
+    private List<StatusHistoryDto> mapStatusHistoryListIntoDto(List<StatusHistory> statusHistoryList){
+        return statusHistoryList.stream()
+                .sorted(Comparator.comparing(StatusHistory::getChangeTime))
+                .map(this::mapSingleStatusHistoryIntoDto)
+                .toList();
+    }
+
+    private StatusHistoryDto mapSingleStatusHistoryIntoDto(StatusHistory statusHistory){
+        return StatusHistoryDto.builder()
+                .state(statusHistory.getState())
+                .timeOfChange(statusHistory.getChangeTime())
+                .note(statusHistory.getNote())
                 .build();
     }
 

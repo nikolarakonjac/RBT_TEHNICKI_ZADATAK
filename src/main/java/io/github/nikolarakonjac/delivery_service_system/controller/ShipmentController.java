@@ -34,14 +34,15 @@ public class ShipmentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/{trackerId}")
-    public ResponseEntity<ShipmentDto> getShipment(@PathVariable UUID trackerId){
-        return ResponseEntity.ok(shipmentService.getSingleShipment(trackerId));
+    @GetMapping("/{trackerId}/status-history")
+    public ResponseEntity<ShipmentDto> getShipmentStatusHistory(@PathVariable UUID trackerId){
+        return ResponseEntity.ok(shipmentService.getShipmentStatusHistory(trackerId));
     }
 
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ShipmentImportResultDto> importShipments(@RequestParam("file") MultipartFile file) {
         return ResponseEntity.status(HttpStatus.CREATED).body(shipmentService.importShipmentsFromCsv(file));
     }
+
 
 }
