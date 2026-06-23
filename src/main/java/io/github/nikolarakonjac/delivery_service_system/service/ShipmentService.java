@@ -88,6 +88,7 @@ public class ShipmentService {
                 .trackerId(shipment.getTrackerId())
                 .description(shipment.getDescription())
                 .currentState(shipment.getCurrentState())
+                .createdAt(shipment.getCreatedAt())
                 .statusHistory(mapStatusHistoryListIntoDto(shipment.getStatusHistory()))
                 .build();
     }
