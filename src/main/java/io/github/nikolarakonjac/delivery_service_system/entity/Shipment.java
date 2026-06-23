@@ -24,7 +24,6 @@ public class Shipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @GeneratedValue
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "tracker_id", columnDefinition = "UUID")
     private UUID trackerId;
@@ -61,6 +60,19 @@ public class Shipment {
     void onCreate() {
         if(createdAt == null){
             createdAt = Instant.now();
+        }
+
+        if(currentState == null){
+            currentState = ShipmentState.CREATED;
+        }
+
+        if(statusHistory.isEmpty()){
+            StatusHistory newStatusHistory = StatusHistory.builder()
+                    .state(ShipmentState.CREATED)
+                    .note(null)
+                    .build();
+
+            this.addStatusHistory(newStatusHistory);
         }
     }
 }
