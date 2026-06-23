@@ -68,7 +68,7 @@ public class Shipment {
 
         if(statusHistory.isEmpty()){
             StatusHistory newStatusHistory = StatusHistory.builder()
-                    .state(ShipmentState.CREATED)
+                    .state(currentState)
                     .note(null)
                     .build();
 

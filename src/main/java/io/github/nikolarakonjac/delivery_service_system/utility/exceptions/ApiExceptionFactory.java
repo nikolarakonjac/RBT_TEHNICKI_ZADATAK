@@ -23,4 +23,16 @@ public class ApiExceptionFactory {
         return new ApiException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, "Shipment doesn't exist");
     }
 
+    public static ApiException invalidCsvFile(String message) {
+        return new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST, message);
+    }
+
+    public static ApiException invalidShipmentState(String state, int lineNumber) {
+        return new ApiException(
+                HttpStatus.BAD_REQUEST,
+                ErrorCode.BAD_REQUEST,
+                "Invalid state '" + state + "' at line " + lineNumber
+        );
+    }
+
 }
